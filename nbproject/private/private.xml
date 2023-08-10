@@ -5,9 +5,7 @@
         <group>
             <file>file:/D:/Projeler/Modbus%20Lib/ModbusLib.X/modbus.c</file>
             <file>file:/D:/Projeler/Modbus%20Lib/ModbusLib.X/modbus.h</file>
-            <file>file:/D:/Projeler/Modbus%20Lib/ModbusLib.X/mcc_generated_files/tmr3.c</file>
             <file>file:/D:/Projeler/Modbus%20Lib/ModbusLib.X/main.c</file>
-            <file>file:/D:/Projeler/Modbus%20Lib/ModbusLib.X/zaman.c</file>
         </group>
     </open-files>
 </project-private>

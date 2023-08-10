@@ -47,6 +47,7 @@ extern volatile uint16_t ModbusTMRReloadVal;
 uint8_t modbus_tamam=0;
 
 volatile uint8_t frame_timeout=0;        //modbus frameleri arasý 3,5 karakterden uzun mu?
+volatile uint8_t frame_kaydet=0;
 volatile uint8_t gelen_veri[GELEN_BUFFER_SIZE];    //usarttan gelen veri ilk önce buraya kaydedilir.
 volatile uint8_t frame_baslangic[FRAME_ADRES_SIZE];    //hangi gelen_veri frame ilk adresidir, bu bilgiyi tut
 volatile uint8_t gelenHead;      //gelenVeri ringBuffer için
@@ -104,31 +105,36 @@ uint8_t gelen_veri_pop()
 
 void gelen_veri_push(uint8_t veri)
 {
-     //modbus için ring buffer.
-    uint8_t next;
-    next = gelenHead+1;
-    
-    if (next >= GELEN_BUFFER_SIZE)  //ring sonuna geldiyse baþa dön.
-        next=0;
-    
-    if(next == gelenTail)
-    {
-        //buffer doldu.. önceki verinin üzerine yazmakla ilgili fonksiyon yazýlacak.
-        //todo: gelen veri doldu. çözüm üret.
+    //paketin ilk adresi benim modbus adresim deðilse boþver kaydetme.
+    //paketin ilk adresi benim modbus adresimse veya paket baþlangýcý bana aitse bu frame kaydet.
+    if ((frame_timeout && veri == MODBUS_ADRES) || frame_kaydet) {
+        
+        frame_kaydet=1;     //bu frame bana ait ring buffera kaydet.
+        
+        //modbus için ring buffer.
+        uint8_t next;
+        next = gelenHead + 1;
+
+        if (next >= GELEN_BUFFER_SIZE) //ring sonuna geldiyse baþa dön.
+            next = 0;
+
+        if (next == gelenTail) {
+            //buffer doldu.. önceki verinin üzerine yazmakla ilgili fonksiyon yazýlacak.
+            //todo: gelen veri doldu. çözüm üret.
+        }
+
+        //usarttan gelen veriyi buffera yaz.
+        gelen_veri[gelenHead] = veri;
+        gelen_veri_sayisi++;
+
+        //Eðer önceki byte ile 3.5 karakter kadar zaman geçtiyse yeni paket baþlýðý yap.
+        if (frame_timeout) {
+            frame_baslangic_push(gelenHead);
+        }
+
+        ModbusTMR_Clear();
+        gelenHead = next;
     }
-    
-    //usarttan gelen veriyi buffera yaz.
-    gelen_veri[gelenHead]=veri;
-    gelen_veri_sayisi++;
-    
-    //Eðer önceki byte ile 3.5 karakter kadar zaman geçtiyse yeni paket baþlýðý yap.
-    if(frame_timeout)
-    {     
-        frame_baslangic_push(gelenHead);
-    }
-    
-    ModbusTMR_Clear();
-    gelenHead=next;
 }
 
 //------------------------------------------------------------------------------
@@ -305,6 +311,7 @@ void crc_hesapla(uint8_t messageLength)
 void modbus_frame_timeout()
 {
     frame_timeout=1;
+    frame_kaydet=0;
 }
 
 //------------------------------------------------------------------------------

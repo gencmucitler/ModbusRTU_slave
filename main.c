@@ -52,6 +52,12 @@ extern volatile uint8_t inputDiscreteReg[INPUT_DISCRETE_REG_SIZE];
 extern volatile uint16_t holdingReg[HOLDING_REG_SIZE];
 extern volatile uint16_t inputReg[INPUT_REG_SIZE];
 
+extern uint8_t gelenHead;
+extern uint8_t gelenTail;
+extern volatile uint8_t gelen_veri_sayisi;
+extern volatile uint8_t frame_basHead;  //frame_baslangic ringBuffer için
+extern volatile uint8_t frame_basTail;
+extern volatile uint8_t frame_sayisi;
 
 /*
                          Main application
@@ -166,6 +172,20 @@ void main(void)
             sprintf(sprint_temp,"%lu \r\n",once_led_zamani);
             usart2_yaz(sprint_temp);            
                     
+//            sprintf(sprint_temp,"Modbus Ring Buffer verileri.\r\n");
+//            usart2_yaz(sprint_temp);            
+//            sprintf(sprint_temp,"gelenHead:%u \r\n",gelenHead);
+//            usart2_yaz(sprint_temp);            
+//            sprintf(sprint_temp,"gelenTail:%u \r\n",gelenTail);
+//            usart2_yaz(sprint_temp);            
+//            sprintf(sprint_temp,"gelen_veri_sayisi:%u \r\n",gelen_veri_sayisi);
+//            usart2_yaz(sprint_temp);                        
+//            sprintf(sprint_temp,"frame_basHead:%u \r\n",frame_basHead);
+//            usart2_yaz(sprint_temp); 
+//            sprintf(sprint_temp,"frame_basTail:%u \r\n",frame_basTail);
+//            usart2_yaz(sprint_temp);    
+//            sprintf(sprint_temp,"frame_sayisi:%u \r\n",frame_sayisi);
+//            usart2_yaz(sprint_temp);                
         }
 
         //modbus_gelenFrame_Yazdir();
